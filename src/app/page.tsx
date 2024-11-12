@@ -1,3 +1,9 @@
+import { PomodoroTimer } from "@/features/pomodoro-timer/components/PomodoroTimer";
+
 export default function Home() {
-  return <div></div>;
+  return (
+    <div className="flex h-screen">
+      <PomodoroTimer />
+    </div>
+  );
 }
