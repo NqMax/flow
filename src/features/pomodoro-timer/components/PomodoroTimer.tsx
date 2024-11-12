@@ -54,10 +54,10 @@ export function PomodoroTimer() {
           {states.map((state) => (
             <TabsContent key={state} value={state}>
               <div className="flex flex-col items-center">
-                <time className="font-geist-mono mb-8 mt-6 text-8xl">
+                <time className="mb-8 mt-6 font-geist-mono text-8xl">
                   {currentState === state
                     ? `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-                    : `${timeToMinutes(pomodoroConfig[`${state}Time`]).toString().padStart(2, "0")}:${timeToSeconds(pomodoroConfig[`${state}Time`]).toString().padStart(2, "0")}`}
+                    : `${timeToMinutes(pomodoroConfig[state].time).toString().padStart(2, "0")}:${timeToSeconds(pomodoroConfig[state].time).toString().padStart(2, "0")}`}
                 </time>
                 <div className="flex gap-x-4">
                   {!isRunning && currentState === state && (

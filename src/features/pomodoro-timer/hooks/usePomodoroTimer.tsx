@@ -1,24 +1,29 @@
 import { useState, useEffect, useRef } from "react";
 
 export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
-  const pomodoroStates = {
-    work: "work",
-    shortBreak: "shortBreak",
-    longBreak: "longBreak",
-  } as const;
-  type PomodoroStates = keyof typeof pomodoroStates;
-
   const pomodoroConfig = {
-    workTime: 5,
-    shortBreakTime: 4,
-    longBreakTime: 3,
-    longBreakInterval: 4,
-  };
-  type PomodoroConfig = keyof typeof pomodoroConfig;
+    work: {
+      state: "work",
+      time: 5,
+      message: "Time for work!",
+    },
+    shortBreak: {
+      state: "shortBreak",
+      time: 4,
+      message: "Time for a short break!",
+    },
+    longBreak: {
+      state: "longBreak",
+      time: 3,
+      message: "Time for a long break!",
+      interval: 4,
+    },
+  } as const;
+  type PomodoroStates = keyof typeof pomodoroConfig;
 
-  const [time, setTime] = useState(pomodoroConfig.workTime);
+  const [time, setTime] = useState<number>(pomodoroConfig.work.time);
   const [currentState, setCurrentState] = useState<PomodoroStates>(
-    pomodoroStates.work,
+    pomodoroConfig.work.state,
   );
   const [isRunning, setIsRunning] = useState(false);
   const [pomodoroCount, setPomodoroCount] = useState(0);
@@ -30,38 +35,48 @@ export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
     intervalRef.current = undefined;
   }
 
+  function stateChangeHelper(state: PomodoroStates) {
+    setCurrentState(state);
+    setTime(pomodoroConfig[state].time);
+    setCurrentTab(state);
+    sendNotification(state);
+    return pomodoroConfig[state].time;
+  }
+
+  function sendNotification(state: PomodoroStates) {
+    if (Notification.permission === "granted") {
+      new Notification("Pomodoro Timer", {
+        body: pomodoroConfig[state].message,
+        tag: "pomodoro-notification",
+      });
+    }
+  }
+
   function handleStateChange() {
-    if (currentState === pomodoroStates.work) {
+    if (currentState === pomodoroConfig.work.state) {
       setPomodoroCount(pomodoroCount + 1);
 
       const newCount = pomodoroCount + 1;
 
-      if (newCount % pomodoroConfig.longBreakInterval === 0) {
-        setCurrentState(pomodoroStates.longBreak);
-        setTime(pomodoroConfig.longBreakTime);
-        setCurrentTab(pomodoroStates.longBreak);
-        return pomodoroConfig.longBreakTime;
+      if (newCount % pomodoroConfig.longBreak.interval === 0) {
+        return stateChangeHelper("longBreak");
       } else {
-        setCurrentState(pomodoroStates.shortBreak);
-        setTime(pomodoroConfig.shortBreakTime);
-        setCurrentTab(pomodoroStates.shortBreak);
-        return pomodoroConfig.shortBreakTime;
+        return stateChangeHelper("shortBreak");
       }
     } else {
-      setCurrentState(pomodoroStates.work);
-      setTime(pomodoroConfig.workTime);
-      setCurrentTab(pomodoroStates.work);
-      return pomodoroConfig.workTime;
+      return stateChangeHelper("work");
     }
   }
 
   function handleStart(state: PomodoroStates) {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
     setCurrentState(state);
-    const requestedTime = `${state}Time` as PomodoroConfig;
-    const stateTime = pomodoroConfig[requestedTime];
 
     if (currentState !== state) {
-      setTime(stateTime);
+      setTime(pomodoroConfig[state].time);
     }
 
     setIsRunning(true);
@@ -76,16 +91,16 @@ export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
     cleanInterval();
     setIsRunning(false);
 
-    if (currentState === pomodoroStates.work) {
-      setTime(pomodoroConfig.workTime);
+    if (currentState === pomodoroConfig.work.state) {
+      setTime(pomodoroConfig.work.time);
     }
 
-    if (currentState === pomodoroStates.shortBreak) {
-      setTime(pomodoroConfig.shortBreakTime);
+    if (currentState === pomodoroConfig.shortBreak.state) {
+      setTime(pomodoroConfig.shortBreak.time);
     }
 
-    if (currentState === pomodoroStates.longBreak) {
-      setTime(pomodoroConfig.longBreakTime);
+    if (currentState === pomodoroConfig.longBreak.state) {
+      setTime(pomodoroConfig.longBreak.time);
     }
   }
 
