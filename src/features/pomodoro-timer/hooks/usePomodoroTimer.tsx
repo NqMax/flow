@@ -4,16 +4,19 @@ export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
   const pomodoroConfig = {
     work: {
       state: "work",
+      friendlyName: "Pomodoro",
       time: 5,
       message: "Time for work!",
     },
     shortBreak: {
       state: "shortBreak",
+      friendlyName: "Break",
       time: 4,
       message: "Time for a short break!",
     },
     longBreak: {
       state: "longBreak",
+      friendlyName: "Long Break",
       time: 3,
       message: "Time for a long break!",
       interval: 4,
@@ -53,6 +56,10 @@ export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
   }
 
   function handleStateChange() {
+    const audioElement = document.querySelector("audio")!;
+
+    audioElement.play();
+
     if (currentState === pomodoroConfig.work.state) {
       setPomodoroCount(pomodoroCount + 1);
 

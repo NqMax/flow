@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TimerResetIcon } from "lucide-react";
 import { timeToMinutes, timeToSeconds } from "@/features/pomodoro-timer/utils";
+import { Progress } from "@/components/ui/progress";
 
 export function PomodoroTimer() {
   const [currentTab, setCurrentTab] = useState("work");
@@ -23,17 +24,23 @@ export function PomodoroTimer() {
   const minutes = timeToMinutes(time);
   const seconds = timeToSeconds(time);
 
+  const percentageCompleted =
+    ((pomodoroConfig[currentState].time - time) /
+      pomodoroConfig[currentState].time) *
+    100;
+
   const states = ["work", "shortBreak", "longBreak"] as const;
 
   return (
     <div className="mx-auto my-auto flex flex-col">
-      <div className="font-medium">Pomodoros so far</div>
-      <div className="mb-2 text-xs">
-        <span className="mr-1 text-sm">{pomodoroCount}</span>
-        {Array(pomodoroCount)
-          .fill(null)
-          .map(() => "🍅")}
+      <audio src="/notification.wav"></audio>
+      <div className="my-5">
+        <div className="mb-1 font-geist-mono text-sm font-bold">
+          {pomodoroConfig[currentState].friendlyName}
+        </div>
+        <Progress value={percentageCompleted} />
       </div>
+
       <div className="rounded-lg border p-4">
         <Tabs
           value={currentTab}
@@ -54,11 +61,20 @@ export function PomodoroTimer() {
           {states.map((state) => (
             <TabsContent key={state} value={state}>
               <div className="flex flex-col items-center">
-                <time className="mb-8 mt-6 font-geist-mono text-8xl">
+                <time className="mb-5 mt-3 font-geist-mono text-8xl">
                   {currentState === state
                     ? `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
                     : `${timeToMinutes(pomodoroConfig[state].time).toString().padStart(2, "0")}:${timeToSeconds(pomodoroConfig[state].time).toString().padStart(2, "0")}`}
                 </time>
+                <div className="mb-5 flex flex-col items-center">
+                  <div className="font-medium">Pomodoros so far</div>
+                  <div className="text-xs">
+                    <span className="mr-1 text-sm">{pomodoroCount}</span>
+                    {Array(pomodoroCount)
+                      .fill(null)
+                      .map(() => "🍅")}
+                  </div>
+                </div>
                 <div className="flex gap-x-4">
                   {!isRunning && currentState === state && (
                     <Button onClick={() => handleStart(state)}>Start</Button>
