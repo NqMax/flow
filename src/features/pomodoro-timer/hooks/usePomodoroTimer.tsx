@@ -1,35 +1,39 @@
 import { useState, useEffect, useRef } from "react";
 
-export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
-  const pomodoroConfig = {
-    work: {
-      state: "work",
-      friendlyName: "Pomodoro",
-      time: 5,
-      message: "Time for work!",
-    },
-    shortBreak: {
-      state: "shortBreak",
-      friendlyName: "Break",
-      time: 4,
-      message: "Time for a short break!",
-    },
-    longBreak: {
-      state: "longBreak",
-      friendlyName: "Long Break",
-      time: 3,
-      message: "Time for a long break!",
-      interval: 4,
-    },
-  } as const;
-  type PomodoroStates = keyof typeof pomodoroConfig;
+const defaultConfig = {
+  work: {
+    state: "work",
+    friendlyName: "Pomodoro",
+    time: 5,
+    message: "Time for work!",
+    autoStart: true,
+  },
+  shortBreak: {
+    state: "shortBreak",
+    friendlyName: "Break",
+    time: 5 * 60,
+    message: "Time for a short break!",
+    autoStart: true,
+  },
+  longBreak: {
+    state: "longBreak",
+    friendlyName: "Long Break",
+    time: 15 * 60,
+    message: "Time for a long break!",
+    interval: 4,
+    autoStart: true,
+  },
+};
+export type PomodoroConfig = typeof defaultConfig;
+type PomodoroStates = keyof typeof defaultConfig;
 
+export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
+  const [pomodoroConfig, setPomodoroConfig] = useState(defaultConfig);
   const [time, setTime] = useState<number>(pomodoroConfig.work.time);
-  const [currentState, setCurrentState] = useState<PomodoroStates>(
-    pomodoroConfig.work.state,
-  );
+  const [currentState, setCurrentState] = useState<PomodoroStates>("work");
   const [isRunning, setIsRunning] = useState(false);
   const [pomodoroCount, setPomodoroCount] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | undefined>();
 
@@ -130,6 +134,18 @@ export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
     };
   }, [isRunning, currentState]);
 
+  // useEffect hook is used to load the stored configuration from localStorage
+  useEffect(() => {
+    const storedConfig = localStorage.getItem("pomodoroConfig");
+
+    if (storedConfig) {
+      const parsedConfig = JSON.parse(storedConfig);
+      setPomodoroConfig(parsedConfig);
+    }
+
+    setIsLoaded(true);
+  }, []);
+
   return {
     time,
     isRunning,
@@ -139,5 +155,6 @@ export function usePomodoroTimer(setCurrentTab: (value: string) => void) {
     handleStart,
     handleStop,
     handleReset,
+    isLoaded,
   };
 }
