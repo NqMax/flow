@@ -1,5 +1,11 @@
+import PomodoroTimer from "@/features/pomodoro/components/PomodoroTimer";
+
 function App() {
-  return <></>;
+  return (
+    <>
+      <PomodoroTimer />
+    </>
+  );
 }
 
 export default App;
