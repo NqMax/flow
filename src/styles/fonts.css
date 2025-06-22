@@ -1,0 +1,14 @@
+@font-face {
+  font-family: "Geist";
+  src: local("Geist"), url("/fonts/Geist.ttf");
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: local("Geist Mono"), url("/fonts/Geist-Mono.ttf");
+}
+
+@theme {
+  --font-geist: "Geist";
+  --font-geist-mono: "Geist Mono";
+}
