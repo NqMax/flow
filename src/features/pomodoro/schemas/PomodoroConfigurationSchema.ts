@@ -1,18 +1,20 @@
 import { z } from "zod/v4";
 
+const intFromStringOrNumber = z
+  .union([z.string(), z.number()])
+  .transform((val) => Number(val))
+  .pipe(z.int().gte(0));
+
 const PomodoroConfigurationSchema = z.object({
   work: z.object({
-    duration: z
-      .union([z.string(), z.number()])
-      .transform((val) => Number(val))
-      .pipe(z.number().gt(0)),
+    duration: intFromStringOrNumber,
   }),
   break: z.object({
-    duration: z.number(),
+    duration: intFromStringOrNumber,
   }),
   longBreak: z.object({
-    duration: z.number(),
-    frequency: z.number(),
+    duration: intFromStringOrNumber,
+    frequency: intFromStringOrNumber,
   }),
   autoStartPhases: z.boolean(),
 });
