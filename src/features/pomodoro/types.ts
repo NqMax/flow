@@ -1,3 +1,6 @@
+import { z } from "zod/v4";
+import { PomodoroConfigurationSchema } from "@/features/pomodoro/schemas/PomodoroConfigurationSchema";
+
 type PomodoroPhase = "work" | "break" | "longBreak";
 
 type PomodoroState = "uninitialized" | "stopped" | "paused" | "running";
@@ -16,19 +19,7 @@ type PomodoroConstants = {
   };
 };
 
-interface PomodoroConfiguration {
-  work: {
-    duration: number;
-  };
-  break: {
-    duration: number;
-  };
-  longBreak: {
-    duration: number;
-    frequency: number;
-  };
-  autoStartPhases: boolean;
-}
+type PomodoroConfiguration = z.infer<typeof PomodoroConfigurationSchema>;
 
 export type {
   PomodoroPhase,
