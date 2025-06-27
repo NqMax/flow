@@ -3,6 +3,10 @@ import { useForm } from "react-hook-form";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { defaultPomodoroConfiguration } from "@/features/pomodoro/constants";
 import {
+  configMinutesToSeconds,
+  configSecondsToMinutes,
+} from "@/features/pomodoro/utils/convertConfigurationDurations";
+import {
   Form,
   FormControl,
   FormField,
@@ -29,11 +33,11 @@ export function ConfigurationForm({ onClose }: ConfigurationFormProps) {
 
   const form = useForm({
     resolver: zodResolver(PomodoroConfigurationSchema),
-    defaultValues: pomodoroConfig,
+    defaultValues: configSecondsToMinutes(pomodoroConfig),
   });
 
   function onSubmit(data: PomodoroConfiguration) {
-    setPomodoroConfig(data);
+    setPomodoroConfig(configMinutesToSeconds(data));
     onClose();
   }
 
