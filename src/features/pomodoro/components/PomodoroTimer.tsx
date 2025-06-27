@@ -30,6 +30,17 @@ function PomodoroTimer() {
 
   const intervalIdRef = useRef<number>(undefined);
 
+  // Configure timeLeft when a new time is saved on the timer configuration
+  const [initialTime, setInitialTime] = useState(pomodoroConfig);
+  if (
+    initialTime[pomodoroPhase].duration !==
+    pomodoroConfig[pomodoroPhase].duration
+  ) {
+    setInitialTime(pomodoroConfig);
+    setTimeLeft(pomodoroConfig[pomodoroPhase].duration);
+    handlePause();
+  }
+
   const autoStartPhases = pomodoroConfig.autoStartPhases;
   const longBreakFrequency = pomodoroConfig.longBreak.frequency;
 
