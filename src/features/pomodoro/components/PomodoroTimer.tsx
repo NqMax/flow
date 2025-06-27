@@ -1,7 +1,9 @@
 import { useState, useRef } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { ConfigurationDialog } from "@/features/pomodoro/components/ConfigurationDialog";
+import { SessionStats } from "@/features/pomodoro/components/SessionStats";
 import { Button } from "@/components/ui/button";
-import { RotateCcwIcon, SettingsIcon } from "lucide-react";
+import { RotateCcwIcon } from "lucide-react";
 import {
   pomodoroConstants,
   initialPomodoroSessionData,
@@ -44,7 +46,9 @@ function PomodoroTimer() {
   const autoStartPhases = pomodoroConfig.autoStartPhases;
   const longBreakFrequency = pomodoroConfig.longBreak.frequency;
 
-  const minutesLeft = Math.floor(timeLeft / 60).toString().padStart(2, "0");
+  const minutesLeft = Math.floor(timeLeft / 60)
+    .toString()
+    .padStart(2, "0");
   const secondsLeft = (timeLeft % 60).toString().padStart(2, "0");
 
   function handleTimeChange(timeLeft: number) {
@@ -139,7 +143,12 @@ function PomodoroTimer() {
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center bg-[url('/images/bg.jpg')]">
+    <div className="w-screen h-screen flex flex-col items-center justify-center bg-[url('/images/bg.jpg')] bg-background/30 bg-blend-darken">
+      <SessionStats
+        sessionData={sessionData}
+        longBreakFrequency={pomodoroConfig.longBreak.frequency}
+        currentPhase={pomodoroPhase}
+      />
       <section className="flex flex-col items-center justify-center gap-5">
         <div className="flex gap-x-2">
           {Object.values(pomodoroConstants).map((phase) => (
@@ -175,12 +184,10 @@ function PomodoroTimer() {
               Pause
             </Button>
           )}
-          <button onClick={handleReset}>
+          <button onClick={handleReset} aria-label="Reset">
             <RotateCcwIcon className="hover:rotate-45 transition-transform" />
           </button>
-          <button>
-            <SettingsIcon className="hover:rotate-45 transition-transform" />
-          </button>
+          <ConfigurationDialog />
         </div>
       </section>
     </div>
