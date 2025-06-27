@@ -21,8 +21,9 @@ function PomodoroTimer() {
   );
 
   const [timeLeft, setTimeLeft] = useState(pomodoroConfig.work.duration);
-  const [pomodoroPhase, setPhase] = useState<PomodoroPhase>("work");
-  const [pomodoroState, setState] = useState<PomodoroState>("uninitialized");
+  const [pomodoroPhase, setPomodoroPhase] = useState<PomodoroPhase>("work");
+  const [pomodoroState, setPomodoroState] =
+    useState<PomodoroState>("uninitialized");
   const [sessionData, setSessionData] = useState<PomodoroSessionData>(
     initialPomodoroSessionData
   );
@@ -56,12 +57,12 @@ function PomodoroTimer() {
 
       if (pomodoroPhase === "work") {
         if (isLongBreak) {
-          setPhase("longBreak");
+          setPomodoroPhase("longBreak");
         } else {
-          setPhase("break");
+          setPomodoroPhase("break");
         }
       } else {
-        setPhase("work");
+        setPomodoroPhase("work");
       }
 
       setSessionData({
@@ -92,30 +93,30 @@ function PomodoroTimer() {
       setTimeLeft((prevTimeLeft) => handleTimeChange(prevTimeLeft));
     }, 1000);
     intervalIdRef.current = intervalId;
-    setState("running");
+    setPomodoroState("running");
   }
 
   function handleStop() {
     clearIntervalRef(intervalIdRef);
-    setState("stopped");
+    setPomodoroState("stopped");
   }
 
   function handlePause() {
     clearIntervalRef(intervalIdRef);
-    setState("paused");
+    setPomodoroState("paused");
   }
 
   function handleReset() {
     clearIntervalRef(intervalIdRef);
     setTimeLeft(pomodoroConfig[pomodoroPhase].duration);
-    setState("uninitialized");
+    setPomodoroState("uninitialized");
   }
 
   function handlePhaseChange(phase: PomodoroPhase) {
     clearIntervalRef(intervalIdRef);
     setTimeLeft(pomodoroConfig[phase].duration);
-    setPhase(phase);
-    setState("uninitialized");
+    setPomodoroPhase(phase);
+    setPomodoroState("uninitialized");
   }
 
   if (
