@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { useTimer } from "@/features/pomodoro/hooks/useTimer";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { ConfigurationDialog } from "@/features/pomodoro/components/ConfigurationDialog";
 import { SessionStats } from "@/features/pomodoro/components/SessionStats";
@@ -14,7 +15,7 @@ import type {
   PomodoroState,
   PomodoroSessionData,
   PomodoroConfiguration,
-} from "@/features/pomodoro/types";
+} from "@/features/pomodoro/types/pomodoroTypes";
 
 function PomodoroTimer() {
   const [pomodoroConfig] = useLocalStorage<PomodoroConfiguration>(
@@ -22,7 +23,11 @@ function PomodoroTimer() {
     defaultPomodoroConfiguration
   );
 
-  const [timeLeft, setTimeLeft] = useState(pomodoroConfig.work.duration);
+  const { timeLeft, setTimeLeft, intervalIdRef, startTimer, stopTimer } =
+    useTimer({
+      initialTimeLeft: pomodoroConfig.work.duration,
+      onTimeChange: handleTimeChange,
+    });
   const [pomodoroPhase, setPomodoroPhase] = useState<PomodoroPhase>("work");
   const [pomodoroState, setPomodoroState] =
     useState<PomodoroState>("uninitialized");
@@ -30,7 +35,12 @@ function PomodoroTimer() {
     initialPomodoroSessionData
   );
 
-  const intervalIdRef = useRef<number>(undefined);
+  const autoStartPhases = pomodoroConfig.autoStartPhases;
+  const longBreakFrequency = pomodoroConfig.longBreak.frequency;
+  const minutesLeft = Math.floor(timeLeft / 60)
+    .toString()
+    .padStart(2, "0");
+  const secondsLeft = (timeLeft % 60).toString().padStart(2, "0");
 
   // Configure timeLeft when a new time is saved on the timer configuration
   const [initialTime, setInitialTime] = useState(pomodoroConfig);
@@ -43,16 +53,17 @@ function PomodoroTimer() {
     handlePause();
   }
 
-  const autoStartPhases = pomodoroConfig.autoStartPhases;
-  const longBreakFrequency = pomodoroConfig.longBreak.frequency;
-
-  const minutesLeft = Math.floor(timeLeft / 60)
-    .toString()
-    .padStart(2, "0");
-  const secondsLeft = (timeLeft % 60).toString().padStart(2, "0");
+  // Auto start phases if configurated to be true
+  if (
+    autoStartPhases &&
+    pomodoroState === "stopped" &&
+    intervalIdRef.current === undefined
+  ) {
+    handleStart();
+  }
 
   function handleTimeChange(timeLeft: number) {
-    if (timeLeft - 1 < 0) {
+    if (timeLeft === 0) {
       const isLongBreak =
         (sessionData[pomodoroPhase].completedPhases + 1) %
           longBreakFrequency ===
@@ -95,55 +106,37 @@ function PomodoroTimer() {
     }
   }
 
-  function clearIntervalRef(
-    intervalIdRef: React.RefObject<number | undefined>
-  ) {
-    clearInterval(intervalIdRef.current);
-    intervalIdRef.current = undefined;
-  }
-
   function handleStart() {
-    clearIntervalRef(intervalIdRef);
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTimeLeft) => handleTimeChange(prevTimeLeft));
-    }, 1000);
-    intervalIdRef.current = intervalId;
+    stopTimer();
+    startTimer();
     setPomodoroState("running");
   }
 
   function handleStop() {
-    clearIntervalRef(intervalIdRef);
+    stopTimer();
     setPomodoroState("stopped");
   }
 
   function handlePause() {
-    clearIntervalRef(intervalIdRef);
+    stopTimer();
     setPomodoroState("paused");
   }
 
   function handleReset() {
-    clearIntervalRef(intervalIdRef);
+    stopTimer();
     setTimeLeft(pomodoroConfig[pomodoroPhase].duration);
     setPomodoroState("uninitialized");
   }
 
   function handlePhaseChange(phase: PomodoroPhase) {
-    clearIntervalRef(intervalIdRef);
+    stopTimer();
     setTimeLeft(pomodoroConfig[phase].duration);
     setPomodoroPhase(phase);
     setPomodoroState("uninitialized");
   }
 
-  if (
-    autoStartPhases &&
-    pomodoroState === "stopped" &&
-    intervalIdRef.current === undefined
-  ) {
-    handleStart();
-  }
-
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center bg-[url('/images/bg.jpg')] bg-background/30 bg-blend-darken">
+    <div className="w-screen h-screen flex flex-col items-center justify-center bg-[url('/images/bg.jpg')] bg-background/50 bg-blend-darken">
       <SessionStats
         sessionData={sessionData}
         longBreakFrequency={pomodoroConfig.longBreak.frequency}
@@ -155,7 +148,7 @@ function PomodoroTimer() {
             <Button
               key={phase.key}
               variant={pomodoroPhase === phase.key ? "default" : "outline"}
-              className="text-xl w-40 font-semibold font-geist-mono"
+              className="text-xl w-40 font-semibold font-geist-mono rounded-xl"
               onClick={() => handlePhaseChange(phase.key)}
             >
               {phase.readableName}
@@ -171,7 +164,7 @@ function PomodoroTimer() {
             pomodoroState === "uninitialized") && (
             <Button
               onClick={handleStart}
-              className="text-xl font-semibold font-geist-mono"
+              className="text-xl font-semibold font-geist-mono rounded-xl"
             >
               Start
             </Button>
@@ -179,7 +172,7 @@ function PomodoroTimer() {
           {pomodoroState === "running" && (
             <Button
               onClick={handlePause}
-              className="text-xl font-semibold font-geist-mono"
+              className="text-xl font-semibold font-geist-mono rounded-xl"
             >
               Pause
             </Button>
