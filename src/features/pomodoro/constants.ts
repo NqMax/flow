@@ -2,7 +2,7 @@ import type {
   PomodoroConstants,
   PomodoroConfiguration,
   PomodoroSessionData,
-} from "@/features/pomodoro/types";
+} from "@/features/pomodoro/types/pomodoroTypes";
 
 const pomodoroConstants: PomodoroConstants = {
   work: {

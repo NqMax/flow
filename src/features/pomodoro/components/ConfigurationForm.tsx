@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PomodoroConfigurationSchema } from "@/features/pomodoro/schemas/PomodoroConfigurationSchema";
-import type { PomodoroConfiguration } from "@/features/pomodoro/types";
+import type { PomodoroConfiguration } from "@/features/pomodoro/types/pomodoroTypes";
 
 interface ConfigurationFormProps {
   onClose: () => void;

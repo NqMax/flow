@@ -1,4 +1,4 @@
-import type { PomodoroConfiguration } from "@/features/pomodoro/types";
+import type { PomodoroConfiguration } from "@/features/pomodoro/types/pomodoroTypes";
 
 // Utility: convert config durations from seconds to minutes
 export function configSecondsToMinutes(

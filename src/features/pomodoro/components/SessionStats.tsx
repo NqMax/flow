@@ -2,7 +2,7 @@ import type {
   PomodoroSessionData,
   PomodoroConfiguration,
   PomodoroPhase,
-} from "@/features/pomodoro/types";
+} from "@/features/pomodoro/types/pomodoroTypes";
 import type React from "react";
 
 interface SessionStatsProps {
