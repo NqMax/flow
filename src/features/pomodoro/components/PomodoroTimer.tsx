@@ -63,32 +63,16 @@ function PomodoroTimer() {
   }
 
   function handleTimeChange(timeLeft: number) {
-    if (timeLeft === 0) {
-      const isLongBreak =
-        (sessionData[pomodoroPhase].completedPhases + 1) %
-          longBreakFrequency ===
-        0;
+    if (timeLeft >= 0) return;
 
-      let nextPhase: PomodoroConfiguration[PomodoroPhase];
+    const workCompleted = sessionData.work.completedPhases;
+    const isLongBreakNext = (workCompleted + 1) % longBreakFrequency === 0;
 
+    let nextPhase: PomodoroPhase;
       if (pomodoroPhase === "work") {
-        nextPhase = isLongBreak
-          ? pomodoroConfig.longBreak
-          : pomodoroConfig.break;
+      nextPhase = isLongBreakNext ? "longBreak" : "break";
       } else {
-        nextPhase = pomodoroConfig.work;
-      }
-
-      const nextPhaseDuration = nextPhase.duration;
-
-      if (pomodoroPhase === "work") {
-        if (isLongBreak) {
-          setPomodoroPhase("longBreak");
-        } else {
-          setPomodoroPhase("break");
-        }
-      } else {
-        setPomodoroPhase("work");
+      nextPhase = "work";
       }
 
       setSessionData({
@@ -99,11 +83,9 @@ function PomodoroTimer() {
         },
       });
 
+    handlePhaseChange(nextPhase);
       handleStop();
-      return nextPhaseDuration;
-    } else {
-      return timeLeft - 1;
-    }
+    notifyOnPhaseChange(nextPhase);
   }
 
   function handleStart() {

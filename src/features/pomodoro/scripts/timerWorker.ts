@@ -16,7 +16,7 @@ function messageHandler(e: MessageEvent<TimerEvent>) {
     time = e.data.timeLeft;
 
     intervalId = setInterval(() => {
-      postMessage({ intervalId, timeLeft: time-- });
+      postMessage({ intervalId, timeLeft: --time });
     }, 1000);
 
     return;

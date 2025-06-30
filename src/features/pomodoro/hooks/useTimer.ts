@@ -1,11 +1,11 @@
 import Worker from "@/features/pomodoro/scripts/timerWorker?worker";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { clearIntervalRef } from "@/utils/clearIntervaRef";
 import type { TimerWorker } from "@/features/pomodoro/types/timerWorkerTypes";
 
 interface TimerProps {
   initialTimeLeft: number;
-  onTimeChange: (timeLeft: number) => number;
+  onTimeChange: (timeLeft: number) => void;
 }
 
 export function useTimer({ initialTimeLeft, onTimeChange }: TimerProps) {
@@ -14,21 +14,18 @@ export function useTimer({ initialTimeLeft, onTimeChange }: TimerProps) {
   const workerRef = useRef<TimerWorker>(null);
   const intervalIdRef = useRef<number>(undefined);
 
-  useEffect(() => {
-    const worker = new Worker() as TimerWorker;
+  if (!workerRef.current) {
+    workerRef.current = new Worker() as TimerWorker;
+  }
 
-    workerRef.current = worker;
+  workerRef.current.onmessage = (e) => {
+    const { intervalId, timeLeft } = e.data;
 
-    worker.onmessage = (e) => {
-      const { intervalId, timeLeft } = e.data;
+    intervalIdRef.current ??= intervalId;
 
-      intervalIdRef.current ??= intervalId;
-
-      setTimeLeft(onTimeChange(timeLeft));
-    };
-
-    return () => worker.terminate();
-  }, []);
+    setTimeLeft(timeLeft);
+    onTimeChange(timeLeft);
+  };
 
   function startTimer() {
     workerRef.current?.postMessage({ type: "startTimer", timeLeft });
