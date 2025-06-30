@@ -69,22 +69,22 @@ function PomodoroTimer() {
     const isLongBreakNext = (workCompleted + 1) % longBreakFrequency === 0;
 
     let nextPhase: PomodoroPhase;
-      if (pomodoroPhase === "work") {
+    if (pomodoroPhase === "work") {
       nextPhase = isLongBreakNext ? "longBreak" : "break";
-      } else {
+    } else {
       nextPhase = "work";
-      }
+    }
 
-      setSessionData({
-        ...sessionData,
-        [pomodoroPhase]: {
-          ...sessionData[pomodoroPhase],
-          completedPhases: sessionData[pomodoroPhase].completedPhases + 1,
-        },
-      });
+    setSessionData({
+      ...sessionData,
+      [pomodoroPhase]: {
+        ...sessionData[pomodoroPhase],
+        completedPhases: sessionData[pomodoroPhase].completedPhases + 1,
+      },
+    });
 
     handlePhaseChange(nextPhase);
-      handleStop();
+    handleStop();
     notifyOnPhaseChange(nextPhase);
   }
 
@@ -115,6 +115,17 @@ function PomodoroTimer() {
     setTimeLeft(pomodoroConfig[phase].duration);
     setPomodoroPhase(phase);
     setPomodoroState("uninitialized");
+  }
+
+  function notifyOnPhaseChange(phase: PomodoroPhase) {
+    const notificationTitle = pomodoroConstants[phase].notificationTitle;
+    const notificationBody = pomodoroConstants[phase].notificationBody;
+
+    new Notification(notificationTitle, {
+      body: notificationBody,
+      tag: "pomodoroPhaseChange",
+      renotify: true,
+    });
   }
 
   return (

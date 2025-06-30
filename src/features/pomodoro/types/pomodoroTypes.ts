@@ -16,6 +16,8 @@ type PomodoroConstants = {
     key: PomodoroPhase;
     nextPhase?: PomodoroPhase;
     readableName: string;
+    notificationTitle: string;
+    notificationBody: string;
   };
 };
 

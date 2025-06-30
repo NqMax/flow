@@ -8,16 +8,22 @@ const pomodoroConstants: PomodoroConstants = {
   work: {
     key: "work",
     readableName: "Pomodoro",
+    notificationTitle: "Time to Focus!",
+    notificationBody: "Your work session has started.",
   },
   break: {
     key: "break",
     nextPhase: "work",
     readableName: "Break",
+    notificationTitle: "Break Time!",
+    notificationBody: "Take a short break and recharge.",
   },
   longBreak: {
     key: "longBreak",
     nextPhase: "work",
     readableName: "Long Break",
+    notificationTitle: "Long Break!",
+    notificationBody: "Enjoy a longer break. You've earned it!",
   },
 };
 
