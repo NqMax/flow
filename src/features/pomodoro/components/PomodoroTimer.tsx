@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTimer } from "@/features/pomodoro/hooks/useTimer";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { usePomodoroConfig } from "@/features/pomodoro/hooks/usePomodoroConfig";
 import { ConfigurationDialog } from "@/features/pomodoro/components/ConfigurationDialog";
 import { SessionStats } from "@/features/pomodoro/components/SessionStats";
 import { Button } from "@/components/ui/button";
@@ -8,20 +8,15 @@ import { RotateCcwIcon } from "lucide-react";
 import {
   pomodoroConstants,
   initialPomodoroSessionData,
-  defaultPomodoroConfiguration,
 } from "@/features/pomodoro/constants";
 import type {
   PomodoroPhase,
   PomodoroState,
   PomodoroSessionData,
-  PomodoroConfiguration,
 } from "@/features/pomodoro/types/pomodoroTypes";
 
 function PomodoroTimer() {
-  const [pomodoroConfig] = useLocalStorage<PomodoroConfiguration>(
-    "pomodoro",
-    defaultPomodoroConfiguration
-  );
+  const { pomodoroConfig } = usePomodoroConfig();
 
   const { timeLeft, setTimeLeft, intervalIdRef, startTimer, stopTimer } =
     useTimer({

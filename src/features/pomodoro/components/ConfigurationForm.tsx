@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { defaultPomodoroConfiguration } from "@/features/pomodoro/constants";
+import { usePomodoroConfig } from "@/features/pomodoro/hooks/usePomodoroConfig";
 import {
   configMinutesToSeconds,
   configSecondsToMinutes,
@@ -25,11 +24,7 @@ interface ConfigurationFormProps {
 }
 
 export function ConfigurationForm({ onClose }: ConfigurationFormProps) {
-  const [pomodoroConfig, setPomodoroConfig] =
-    useLocalStorage<PomodoroConfiguration>(
-      "pomodoro",
-      defaultPomodoroConfiguration
-    );
+  const { pomodoroConfig, setPomodoroConfig } = usePomodoroConfig();
 
   const form = useForm({
     resolver: zodResolver(PomodoroConfigurationSchema),
