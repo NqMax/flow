@@ -80,7 +80,9 @@ function PomodoroTimer() {
 
     handlePhaseChange(nextPhase);
     handleStop();
-    notifyOnPhaseChange(nextPhase);
+    if (pomodoroConfig.allowNotifications) {
+      notifyOnPhaseChange(nextPhase);
+    }
   }
 
   function handleStart() {

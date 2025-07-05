@@ -19,6 +19,7 @@ const PomodoroConfigurationSchema = z.object({
     frequency: intFromStringOrNumber,
   }),
   autoStartPhases: z.boolean(),
+  allowNotifications: z.boolean(),
 });
 
 export { PomodoroConfigurationSchema };

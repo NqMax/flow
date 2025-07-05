@@ -51,6 +51,7 @@ const defaultPomodoroConfiguration: PomodoroConfiguration = {
     frequency: 4,
   },
   autoStartPhases: true,
+  allowNotifications: false,
 };
 
 export {
