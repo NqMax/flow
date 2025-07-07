@@ -14,6 +14,7 @@ import type {
   PomodoroState,
   PomodoroSessionData,
 } from "@/features/pomodoro/types/pomodoroTypes";
+import { ThemeSelector } from "@/components/ThemeSelector";
 
 function PomodoroTimer() {
   const { pomodoroConfig } = usePomodoroConfig();
@@ -122,18 +123,23 @@ function PomodoroTimer() {
       body: notificationBody,
       tag: "pomodoroPhaseChange",
       renotify: true,
-    });
+    } as NotificationOptions & { renotify: boolean });
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center bg-[url('/images/bg.jpg')] bg-background/50 bg-blend-darken">
-      <SessionStats
-        sessionData={sessionData}
-        longBreakFrequency={pomodoroConfig.longBreak.frequency}
-        currentPhase={pomodoroPhase}
-      />
-      <section className="flex flex-col items-center justify-center gap-5">
-        <div className="flex gap-x-2">
+    <div className="w-screen h-screen flex flex-col items-center">
+      <header className="flex flex-row relative container justify-center items-center p-8">
+        <SessionStats
+          sessionData={sessionData}
+          longBreakFrequency={pomodoroConfig.longBreak.frequency}
+          currentPhase={pomodoroPhase}
+        />
+        <div className="absolute right-0">
+          <ThemeSelector />
+        </div>
+      </header>
+      <main className="flex flex-col items-center justify-center gap-5 my-auto">
+        <div className="flex gap-3">
           {Object.values(pomodoroConstants).map((phase) => (
             <Button
               key={phase.key}
@@ -148,18 +154,15 @@ function PomodoroTimer() {
         <div className="text-9xl font-bold">
           {minutesLeft}:{secondsLeft}
         </div>
-        <div className="flex gap-x-2 w-full justify-center">
-          {(pomodoroState === "paused" ||
-            pomodoroState === "stopped" ||
-            pomodoroState === "uninitialized") && (
+        <div className="flex gap-3 w-full justify-center items-center">
+          {pomodoroState !== "running" ? (
             <Button
               onClick={handleStart}
               className="text-xl font-semibold font-geist-mono rounded-xl"
             >
               Start
             </Button>
-          )}
-          {pomodoroState === "running" && (
+          ) : (
             <Button
               onClick={handlePause}
               className="text-xl font-semibold font-geist-mono rounded-xl"
@@ -172,7 +175,7 @@ function PomodoroTimer() {
           </button>
           <ConfigurationDialog />
         </div>
-      </section>
+      </main>
     </div>
   );
 }
